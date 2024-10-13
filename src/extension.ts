@@ -127,8 +127,9 @@ async function createNewFile(fileName: string) {
 // Generates code from parsed audio input using Gemini API
 async function generateCodeFromCommand(command: any): Promise<any> {
 	try {
-		// Send POST request to Flask server with command in JSON body
-		const response = await axios.post('http://127.0.0.1:5000/generate_code_from_command', {
+		// Send POST request to Flask server on the AI PC with command in JSON body
+		const source = 'http://10.18.242.129:5000/generate_code_from_command'
+		const response = await axios.post(source, {
 			command: command
 		});
 
