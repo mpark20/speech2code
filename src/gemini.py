@@ -51,7 +51,8 @@ def generate_code_from_command():
     response = model.generate_content(
         "This is an audio transcript. "
         "This is supposed to be a person speaking what they want to code. "
-        "Generate the code to copy and paste without any explanation: "
+        "Generate the code to copy and paste without any explanation "
+        "and do not put the result in a code block."
         + command
     )
 

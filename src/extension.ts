@@ -12,12 +12,16 @@ const client = new AssemblyAI({
   	apiKey: 'a8f8800503f64f2cb716dd36b090f909'
 });
 
-const audioFile = 'https://assembly.ai/nbc.mp3';
+const audioFile = path.resolve(__dirname, 'sample_data/code_audio.m4a')
 
 const params = {
-	audio: audioFile,
-	speaker_labels: true
-};
+  audio: audioFile,
+  speaker_labels: true
+}
+
+// ID for pre-transcribed audio file sample_data/code_audio.m4a
+const CODE_AUDIO_ID = "860b815f-bd1d-4e74-ab3b-7e750937c7f0"
+const NBC_AUDIO_ID = "eefd8350-e279-4960-a9f8-ef71136a344b"
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -34,26 +38,33 @@ export function activate(context: vscode.ExtensionContext) {
 const runExtension = async () => {
 	// Transcribe audio file into text
 	// const command = transcribeTextFromAudio();
-	const command = 'Create a JSON file that prints the word happy into console';
+	//const command = 'Create a JSON file that prints the word happy into console';
 
 	// const fileName = await generateFileName(command);
-	const fileName = 'test.js';
+	const fileName = 'test.py';
 
 	// Create new file
 	await createNewFile(fileName);
+	console.log(process.cwd())
 
 	// Test using static text to refrain from using transcribe credits
-	const code = await generateCodeFromCommand(command);
-	console.log(code);
-	const editor = vscode.window.activeTextEditor;
+	const command: string = await transcribeTextFromAudio();
+	console.log(command)
 
-	if (editor && typeof code === 'string') {
-		const position = editor.selection.active; // Current cursor position
-		const text: string = code;
-		editor.edit(editBuilder => {
-		editBuilder.insert(position, text); // Insert text at cursor position
-		});
-	}
+	// Transcribe our command into code
+	const code: string = await generateCodeFromCommand(command);
+	console.log(code)
+	console.log(typeof code)
+
+	// Insert text at cursor position
+	const editor = vscode.window.activeTextEditor;
+    if (editor && typeof code == "string") {
+		console.log("in editor")
+        const position = editor.selection.active;  // Current cursor position
+        editor.edit(editBuilder => {
+            editBuilder.insert(position, code);  // Insert text at cursor position
+        });
+    }
 
 	// Run generated code
 	await runCode();
@@ -61,15 +72,17 @@ const runExtension = async () => {
 
 // Runs transcription
 async function transcribeTextFromAudio(): Promise<any> {
-	const transcript = await client.transcripts.transcribe(params);
+	// const transcript = await client.transcripts.transcribe(params);
+	// For now, we can test with our old transcript results
+    const transcript = await client.transcripts.get(CODE_AUDIO_ID)
 
-	if (transcript.status === 'error') {
-		console.error(`Transcription failed: ${transcript.error}`);
-		process.exit(1);
-	}
+    if (transcript.status === 'error') {
+        console.error(`Transcription failed: ${transcript.error}`);
+        process.exit(1);
+    }
 
-	console.log(transcript.text);
-	return transcript.text;
+    console.log(transcript.text);
+	return transcript.text
 }
 
 // Generates file name using Gemini
@@ -127,13 +140,15 @@ async function generateCodeFromCommand(command: any): Promise<any> {
 		if (typeof codeText !== 'string') {
 			return 'Error';
 		}
-		return extractCodeBlock(codeText);
+		//return extractCodeBlock(codeText);
+		return codeText
 	} catch (error) {
 		console.error('Error generating code:', error);
 		vscode.window.showErrorMessage('Failed to generate code. Please try again.');
 	}
 }
 
+// (Not using this for now, as it is consistently returning NULL)
 // Extracts code from Gemini response
 function extractCodeBlock(text: string) : string {
     const regex = /```([\s\S]*?)```/g;
