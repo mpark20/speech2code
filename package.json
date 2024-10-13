@@ -24,10 +24,6 @@
         "command": "speech2code.run",
         "title": "Run Code",
         "icon": "$(play)"
-      },
-      {
-        "command": "speech2code.stop",
-        "title": "Stop Code Run"
       }
     ],
     "menus": {

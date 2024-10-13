@@ -33,7 +33,6 @@ export class CodeRunner implements vscode.Disposable {
     }
 
     public async run(languageId: string = null, fileUri: vscode.Uri = null) {
-        vscode.window.showInformationMessage("Successfully reached code run function.");
         if (this._isRunning) {
             vscode.window.showInformationMessage("Code is already running!");
             return;
@@ -41,12 +40,10 @@ export class CodeRunner implements vscode.Disposable {
 
         this._runFromExplorer = this.checkIsRunFromExplorer(fileUri);
         if (this._runFromExplorer) {
-            vscode.window.showInformationMessage("Run from explorer.");
             this._document = await vscode.workspace.openTextDocument(fileUri);
         } else {
             const editor = vscode.window.activeTextEditor;
             if (editor) {
-                vscode.window.showInformationMessage("Code successfully found.");
                 this._document = editor.document;
             } else {
                 vscode.window.showInformationMessage("No code found or selected.");
@@ -99,6 +96,8 @@ export class CodeRunner implements vscode.Disposable {
     }
 
     private initialize(): void {
+        // this._process.pid = 1;
+        // this._isRunning = true;
         this._config = this.getConfiguration("speech2code");
         this._cwd = this._config.get<string>("cwd");
         if (this._cwd) {
@@ -136,7 +135,6 @@ export class CodeRunner implements vscode.Disposable {
     }
 
     private getCodeFileAndExecute(fileExtension: string, executor: string, appendFile: boolean = true): any {
-        vscode.window.showInformationMessage("Successfully reached get code file.");
         let selection;
         const activeTextEditor = vscode.window.activeTextEditor;
         if (activeTextEditor) {
@@ -250,7 +248,6 @@ export class CodeRunner implements vscode.Disposable {
     }
 
     private executeCommand(executor: string, appendFile: boolean = true) {
-        vscode.window.showInformationMessage("Reached executeCommand function.");
         if (this._config.get<boolean>("runInTerminal")) {
             this.executeCommandInTerminal(executor, appendFile);
         } else {
@@ -401,6 +398,7 @@ export class CodeRunner implements vscode.Disposable {
     }
 
     private async executeCommandInTerminal(executor: string, appendFile: boolean = true) {
+        vscode.window.showInformationMessage("Executing command in terminal.");
         let isNewTerminal = false;
         if (this._terminal === null) {
             this._terminal = vscode.window.createTerminal("Code");
@@ -422,6 +420,7 @@ export class CodeRunner implements vscode.Disposable {
     }
 
     private async executeCommandInOutputChannel(executor: string, appendFile: boolean = true) {
+        vscode.window.showInformationMessage("Executing command in output channel.");
         this._isRunning = true;
         vscode.commands.executeCommand("setContext", "speech2code.codeRunning", true);
         const clearPreviousOutput = this._config.get<boolean>("clearPreviousOutput");
