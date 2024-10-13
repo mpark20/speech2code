@@ -12,6 +12,9 @@ const client = new AssemblyAI({
   	apiKey: 'a8f8800503f64f2cb716dd36b090f909'
 });
 
+// Address of our Intel AI PC
+const SOURCE = 'http://10.18.242.129:5000'
+
 const audioFile = path.resolve(__dirname, 'sample_data/code_desc2.m4a')
 
 const params = {
@@ -37,16 +40,18 @@ export function activate(context: vscode.ExtensionContext) {
 // Runs extension from transcribing audio to running generated code
 const runExtension = async () => {
 
-	// const fileName = await generateFileName(command);
-	const fileName = 'test.py';
-
-	// Create new file
-	await createNewFile(fileName);
-	console.log(process.cwd())
+	// Create file
+	// const fileName = 'test.py';
+	// await createNewFile(fileName);
+	// console.log(process.cwd())
 
 	// Test using static text to refrain from using transcribe credits
 	const command: string = await transcribeTextFromAudio();
 	console.log(command)
+
+	const fileName = (await generateFileName(command)).replace(/\s+/g, '')
+	await createNewFile(fileName);
+	console.log(process.cwd())
 
 	// Transcribe our command into code
 	//const command = 'Create a JSON file that prints the word happy into console';
@@ -88,7 +93,7 @@ async function transcribeTextFromAudio(): Promise<any> {
 async function generateFileName(command: any): Promise<any> {
 	try {
 		// Send POST request to Flask server with command in JSON body
-		const response = await axios.post('http://127.0.0.1:5000/generate_file_name_from_command', {
+		const response = await axios.post(SOURCE + '/generate_file_name_from_command', {
 			command: command
 		});
 
@@ -128,8 +133,7 @@ async function createNewFile(fileName: string) {
 async function generateCodeFromCommand(command: any): Promise<any> {
 	try {
 		// Send POST request to Flask server on the AI PC with command in JSON body
-		const source = 'http://10.18.242.129:5000/generate_code_from_command'
-		const response = await axios.post(source, {
+		const response = await axios.post(SOURCE + '/generate_code_from_command', {
 			command: command
 		});
 
