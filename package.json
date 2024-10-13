@@ -32,24 +32,12 @@
           "when": "!inOutput && config.speech2code.showRunCommandInEditorContextMenu",
           "command": "speech2code.run",
           "group": "navigation"
-        },
-        {
-          "when": "inOutput && !config.speech2code.runInTerminal",
-          "command": "speech2code.stop",
-          "group": "stop-code-run"
         }
       ],
       "editor/title/run": [
         {
           "when": "config.speech2code.showRunIconInEditorTitleMenu",
           "command": "speech2code.run",
-          "group": "navigation"
-        }
-      ],
-      "editor/title": [
-        {
-          "when": "config.speech2code.showStopIconInEditorTitleMenu && speech2code.codeRunning",
-          "command": "speech2code.stop",
           "group": "navigation"
         }
       ],

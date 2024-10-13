@@ -34,6 +34,7 @@ export function activate(context: vscode.ExtensionContext) {
 const runExtension = async () => {
 	// Transcribe audio file into text
 	// const command = transcribeTextFromAudio();
+	const command = 'Create a JSON file that prints the word happy into console';
 
 	// const fileName = await generateFileName(command);
 	const fileName = 'test.js';
@@ -42,7 +43,7 @@ const runExtension = async () => {
 	await createNewFile(fileName);
 
 	// Test using static text to refrain from using transcribe credits
-	const code = await generateCodeFromCommand('Create a JSON file that logs a random date in the console');
+	const code = await generateCodeFromCommand(command);
 	console.log(code);
 	const editor = vscode.window.activeTextEditor;
 
@@ -71,10 +72,31 @@ async function transcribeTextFromAudio(): Promise<any> {
 	return transcript.text;
 }
 
+// Generates file name using Gemini
+async function generateFileName(command: any): Promise<any> {
+	try {
+		// Send POST request to Flask server with command in JSON body
+		const response = await axios.post('http://127.0.0.1:5000/generate_file_name_from_command', {
+			command: command
+		});
+
+		// Get the generated file name from the response
+		const fileName = response.data.message;
+		console.log(fileName);
+
+		if (typeof fileName !== 'string') {
+			return 'Error';
+		}
+		return fileName;
+	} catch (error) {
+		console.error('Error generating file name:', error);
+		vscode.window.showErrorMessage('Failed to generate file name. Please try again.');
+	}
+}
+
 // Creates and opens new file
 async function createNewFile(fileName: string) {
-	// TODO: change hard-coded file location
-	const filePath = vscode.Uri.file(path.join('Users/jeewonj/cs/dubhacks24/speech2code/', fileName));
+	const filePath = vscode.Uri.file(path.join(__dirname, fileName));
 
 	try {
 		// Write the content to the file
@@ -105,11 +127,23 @@ async function generateCodeFromCommand(command: any): Promise<any> {
 		if (typeof codeText !== 'string') {
 			return 'Error';
 		}
-		return codeText;
+		return extractCodeBlock(codeText);
 	} catch (error) {
 		console.error('Error generating code:', error);
 		vscode.window.showErrorMessage('Failed to generate code. Please try again.');
 	}
+}
+
+// Extracts code from Gemini response
+function extractCodeBlock(text: string) : string {
+    const regex = /```([\s\S]*?)```/g;
+    const matches = regex.exec(text);
+    if (matches) {
+        const codeBlock = matches[1].trim().split('\n');
+        codeBlock.shift(); // Remove the first line
+        return codeBlock.join('\n') + '\n'; // Join lines and add a blank line at the end
+    }
+    return null;
 }
 
 // Saves and runs generated code
