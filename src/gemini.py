@@ -21,8 +21,8 @@ def generate_code_from_command():
 
     # Generate content based on the audio transcript and command
     response = model.generate_content(
-        "This is an audio transcript. This is supposed to be a person "
-        "speaking what they want in code. "
+        "This is an audio transcript. "
+        "This is supposed to be a person speaking what they want in code. "
         "Generate the code to copy and paste: " + command
     )
 
