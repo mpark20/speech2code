@@ -12,16 +12,16 @@ const client = new AssemblyAI({
   	apiKey: 'a8f8800503f64f2cb716dd36b090f909'
 });
 
-const audioFile = path.resolve(__dirname, 'sample_data/code_audio.m4a')
+const audioFile = path.resolve(__dirname, 'sample_data/code_desc2.m4a')
 
 const params = {
   audio: audioFile,
   speaker_labels: true
 }
 
-// ID for pre-transcribed audio file sample_data/code_audio.m4a
-const CODE_AUDIO_ID = "860b815f-bd1d-4e74-ab3b-7e750937c7f0"
-const NBC_AUDIO_ID = "eefd8350-e279-4960-a9f8-ef71136a344b"
+// IDs for pre-transcribed audio file sample_data/code_audio.m4a
+// const CODE_AUDIO_ID = "860b815f-bd1d-4e74-ab3b-7e750937c7f0"
+// const NBC_AUDIO_ID = "eefd8350-e279-4960-a9f8-ef71136a344b"
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -36,9 +36,6 @@ export function activate(context: vscode.ExtensionContext) {
 
 // Runs extension from transcribing audio to running generated code
 const runExtension = async () => {
-	// Transcribe audio file into text
-	// const command = transcribeTextFromAudio();
-	//const command = 'Create a JSON file that prints the word happy into console';
 
 	// const fileName = await generateFileName(command);
 	const fileName = 'test.py';
@@ -52,6 +49,7 @@ const runExtension = async () => {
 	console.log(command)
 
 	// Transcribe our command into code
+	//const command = 'Create a JSON file that prints the word happy into console';
 	const code: string = await generateCodeFromCommand(command);
 	console.log(code)
 	console.log(typeof code)
@@ -74,7 +72,8 @@ const runExtension = async () => {
 async function transcribeTextFromAudio(): Promise<any> {
 	// const transcript = await client.transcripts.transcribe(params);
 	// For now, we can test with our old transcript results
-    const transcript = await client.transcripts.get(CODE_AUDIO_ID)
+    //const transcript = await client.transcripts.get(CODE_AUDIO_FILE)
+	const transcript = await client.transcripts.transcribe(params);
 
     if (transcript.status === 'error') {
         console.error(`Transcription failed: ${transcript.error}`);
