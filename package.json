@@ -17,8 +17,305 @@
   "contributes": {
     "commands": [
       {
-        "command": "speech2code.helloWorld",
+        "command": "speech2code.runExtension",
         "title": "Speech2Code"
+      },
+      {
+        "command": "speech2code.run",
+        "title": "Run Code",
+        "icon": "$(play)"
+      },
+      {
+        "command": "speech2code.stop",
+        "title": "Stop Code Run"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "when": "!inOutput && config.speech2code.showRunCommandInEditorContextMenu",
+          "command": "speech2code.run",
+          "group": "navigation"
+        },
+        {
+          "when": "inOutput && !config.speech2code.runInTerminal",
+          "command": "speech2code.stop",
+          "group": "stop-code-run"
+        }
+      ],
+      "editor/title/run": [
+        {
+          "when": "config.speech2code.showRunIconInEditorTitleMenu",
+          "command": "speech2code.run",
+          "group": "navigation"
+        }
+      ],
+      "editor/title": [
+        {
+          "when": "config.speech2code.showStopIconInEditorTitleMenu && speech2code.codeRunning",
+          "command": "speech2code.stop",
+          "group": "navigation"
+        }
+      ],
+      "explorer/context": [
+        {
+          "when": "!explorerResourceIsFolder && config.speech2code.showRunCommandInExplorerContextMenu",
+          "command": "speech2code.run",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "type": "object",
+      "title": "Run Code configuration",
+      "properties": {
+        "speech2code.executorMapByGlob": {
+          "type": "object",
+          "default": {
+            "pom.xml": "cd $dir && mvn clean package"
+          },
+          "description": "Set the executor by glob.",
+          "scope": "resource"
+        },
+        "speech2code.executorMap": {
+          "type": "object",
+          "default": {
+            "javascript": "node",
+            "java": "cd $dir && javac $fileName && java $fileNameWithoutExt",
+            "c": "cd $dir && gcc $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
+            "zig": "zig run",
+            "cpp": "cd $dir && g++ $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
+            "objective-c": "cd $dir && gcc -framework Cocoa $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
+            "php": "php",
+            "python": "python -u",
+            "perl": "perl",
+            "perl6": "perl6",
+            "ruby": "ruby",
+            "go": "go run",
+            "lua": "lua",
+            "groovy": "groovy",
+            "powershell": "powershell -ExecutionPolicy ByPass -File",
+            "bat": "cmd /c",
+            "shellscript": "bash",
+            "fsharp": "fsi",
+            "csharp": "scriptcs",
+            "vbscript": "cscript //Nologo",
+            "typescript": "ts-node",
+            "coffeescript": "coffee",
+            "scala": "scala",
+            "swift": "swift",
+            "julia": "julia",
+            "crystal": "crystal",
+            "ocaml": "ocaml",
+            "r": "Rscript",
+            "applescript": "osascript",
+            "clojure": "lein exec",
+            "haxe": "haxe --cwd $dirWithoutTrailingSlash --run $fileNameWithoutExt",
+            "rust": "cd $dir && rustc $fileName && $dir$fileNameWithoutExt",
+            "racket": "racket",
+            "scheme": "csi -script",
+            "ahk": "autohotkey",
+            "autoit": "autoit3",
+            "dart": "dart",
+            "pascal": "cd $dir && fpc $fileName && $dir$fileNameWithoutExt",
+            "d": "cd $dir && dmd $fileName && $dir$fileNameWithoutExt",
+            "haskell": "runghc",
+            "nim": "nim compile --verbosity:0 --hints:off --run",
+            "lisp": "sbcl --script",
+            "kit": "kitc --run",
+            "v": "v run",
+            "sass": "sass --style expanded",
+            "scss": "scss --style expanded",
+            "less": "cd $dir && lessc $fileName $fileNameWithoutExt.css",
+            "FortranFreeForm": "cd $dir && gfortran $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
+            "fortran-modern": "cd $dir && gfortran $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
+            "fortran_fixed-form": "cd $dir && gfortran $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
+            "fortran": "cd $dir && gfortran $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
+            "sml": "cd $dir && sml $fileName",
+            "mojo": "mojo run",
+            "erlang": "escript",
+            "spwn": "spwn build",
+            "pkl": "cd $dir && pkl eval -f yaml $fileName -o $fileNameWithoutExt.yaml",
+            "gleam": "gleam run -m $fileNameWithoutExt"
+          },
+          "description": "Set the executor of each language.",
+          "scope": "resource"
+        },
+        "speech2code.executorMapByFileExtension": {
+          "type": "object",
+          "default": {
+            ".vb": "cd $dir && vbc /nologo $fileName && $dir$fileNameWithoutExt",
+            ".vbs": "cscript //Nologo",
+            ".scala": "scala",
+            ".jl": "julia",
+            ".cr": "crystal",
+            ".ml": "ocaml",
+            ".zig": "zig run",
+            ".exs": "elixir",
+            ".hx": "haxe --cwd $dirWithoutTrailingSlash --run $fileNameWithoutExt",
+            ".rkt": "racket",
+            ".scm": "csi -script",
+            ".ahk": "autohotkey",
+            ".au3": "autoit3",
+            ".kt": "cd $dir && kotlinc $fileName -include-runtime -d $fileNameWithoutExt.jar && java -jar $fileNameWithoutExt.jar",
+            ".kts": "kotlinc -script",
+            ".dart": "dart",
+            ".pas": "cd $dir && fpc $fileName && $dir$fileNameWithoutExt",
+            ".pp": "cd $dir && fpc $fileName && $dir$fileNameWithoutExt",
+            ".d": "cd $dir && dmd $fileName && $dir$fileNameWithoutExt",
+            ".hs": "runhaskell",
+            ".nim": "nim compile --verbosity:0 --hints:off --run",
+            ".csproj": "dotnet run --project",
+            ".fsproj": "dotnet run --project",
+            ".lisp": "sbcl --script",
+            ".kit": "kitc --run",
+            ".v": "v run",
+            ".vsh": "v run",
+            ".sass": "sass --style expanded",
+            ".cu": "cd $dir && nvcc $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
+            ".ring": "ring",
+            ".sml": "cd $dir && sml $fileName",
+            ".mojo": "mojo run",
+            ".erl": "escript",
+            ".spwn": "spwn build",
+            ".pkl": "cd $dir && pkl eval -f yaml $fileName -o $fileNameWithoutExt.yaml",
+            ".gleam": "gleam run -m $fileNameWithoutExt"
+          },
+          "description": "Set the executor of each file extension.",
+          "scope": "resource"
+        },
+        "speech2code.customCommand": {
+          "type": "string",
+          "default": "echo Hello",
+          "description": "Set the custom command to run.",
+          "scope": "resource"
+        },
+        "speech2code.languageIdToFileExtensionMap": {
+          "type": "object",
+          "default": {
+            "bat": ".bat",
+            "powershell": ".ps1",
+            "typescript": ".ts"
+          },
+          "description": "Set the mapping of languageId to file extension.",
+          "scope": "resource"
+        },
+        "speech2code.defaultLanguage": {
+          "type": "string",
+          "default": "",
+          "description": "Set the default language to run.",
+          "scope": "resource"
+        },
+        "speech2code.cwd": {
+          "type": "string",
+          "default": "",
+          "description": "Set the working directory.",
+          "scope": "resource"
+        },
+        "speech2code.fileDirectoryAsCwd": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to use the directory of the file to be executed as the working directory.",
+          "scope": "resource"
+        },
+        "speech2code.clearPreviousOutput": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to clear previous output before each run.",
+          "scope": "resource"
+        },
+        "speech2code.saveAllFilesBeforeRun": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to save all files before running.",
+          "scope": "resource"
+        },
+        "speech2code.saveFileBeforeRun": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to save the current file before running.",
+          "scope": "resource"
+        },
+        "speech2code.enableAppInsights": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to enable AppInsights to track user telemetry data.",
+          "scope": "resource"
+        },
+        "speech2code.showExecutionMessage": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to show extra execution message like [Running] ... and [Done] ...",
+          "scope": "resource"
+        },
+        "speech2code.runInTerminal": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to run code in Integrated Terminal.",
+          "scope": "resource"
+        },
+        "speech2code.terminalRoot": {
+          "type": "string",
+          "default": "",
+          "description": "For Windows system, replaces the Windows style drive letter in the command with a Unix style root when using a custom shell as the terminal, like Bash or Cgywin. Example: Setting this to '/mnt/' will replace 'C:\\path' with '/mnt/c/path'",
+          "scope": "resource"
+        },
+        "speech2code.preserveFocus": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to preserve focus on code editor after code run is triggered.",
+          "scope": "resource"
+        },
+        "speech2code.ignoreSelection": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to ignore selection to always run entire file.",
+          "scope": "resource"
+        },
+        "speech2code.showRunIconInEditorTitleMenu": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to show 'Run Code' icon in editor title menu.",
+          "scope": "resource"
+        },
+        "speech2code.showStopIconInEditorTitleMenu": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to show 'Stop code run' icon in the editor title menu when code is running.",
+          "scope": "resource"
+        },
+        "speech2code.showRunCommandInEditorContextMenu": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to show 'Run Code' command in editor context menu.",
+          "scope": "resource"
+        },
+        "speech2code.showRunCommandInExplorerContextMenu": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to show 'Run Code' command in explorer context menu.",
+          "scope": "resource"
+        },
+        "speech2code.temporaryFileName": {
+          "type": "string",
+          "default": "tempCodeRunnerFile",
+          "description": "Temporary file name used in running selected code snippet. When it is set as empty, the file name will be random.",
+          "scope": "resource"
+        },
+        "speech2code.respectShebang": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to respect Shebang to run code.",
+          "scope": "resource"
+        }
+      }
+    },
+    "languages": [
+      {
+        "id": "speech2code-output",
+        "mimetypes": [
+          "text/x-code-output"
+        ]
       }
     ]
   },
@@ -31,6 +328,7 @@
     "test": "vscode-test"
   },
   "devDependencies": {
+    "@types/micromatch": "^3.1.0",
     "@types/express": "^5.0.0",
     "@types/mocha": "^10.0.8",
     "@types/node": "20.x",
@@ -42,7 +340,8 @@
     "@vscode/test-electron": "^2.4.1",
     "esbuild": "^0.24.0",
     "eslint": "^9.11.1",
-    "typescript": "^5.6.2"
+    "typescript": "^5.6.2",
+    "tslint": "tslint -t verbose src/**/*.ts"
   },
   "dependencies": {
     "assemblyai": "^4.7.1",
@@ -51,6 +350,8 @@
     "nodejs-whisper": "^0.1.18",
     "open": "^7.0.4",
     "whisper-node": "^1.1.1",
-    "ws": "^7.4.6"
+    "ws": "^7.4.6",
+    "micromatch": "^4.0.2",
+    "tree-kill": "^1.2.2"
   }
 }
