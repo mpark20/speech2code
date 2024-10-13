@@ -2,6 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import * as path from 'path';
+import axios from 'axios';
 
 import { AssemblyAI, RealtimeTranscriber, RealtimeTranscript } from 'assemblyai'
 
@@ -14,6 +15,26 @@ const audioFile = 'https://assembly.ai/nbc.mp3'
 const params = {
   audio: audioFile,
   speaker_labels: true
+}
+
+async function generateCodeFromCommand(command : any) : Promise<any> {
+	try {
+		// Send POST request to Flask server with command in JSON body
+		const response = await axios.post('http://127.0.0.1:5000/generate_code_from_command', {
+			command: command
+		});
+		// Get the code text from the response
+		const codeText = response.data.message;
+		console.log(codeText);
+		if(typeof(codeText) !== 'string') {
+			return "error";
+		} 
+		return codeText;
+
+	} catch (error) {
+		console.error("Error generating code:", error);
+		vscode.window.showErrorMessage("Failed to generate code. Please try again.");
+	}
 }
 
 // This method is called when your extension is activated
@@ -29,27 +50,28 @@ export function activate(context: vscode.ExtensionContext) {
 
 // Runs transcription
 const run = async () => {
-	const transcript = await client.transcripts.transcribe(params)
+	//const transcript = await client.transcripts.transcribe(params)
 
-	if (transcript.status === 'error') {
+	/*if (transcript.status === 'error') {
 		console.error(`Transcription failed: ${transcript.error}`)
 		process.exit(1)
-	}
+	}*/
 
-	console.log(transcript.text)
-
+	//console.log(transcript.text)
+	const command = await generateCodeFromCommand("Create a full React app that prints 'Hello World' on the front page and includes all files.");
+	console.log(command);
 	const editor = vscode.window.activeTextEditor;
-	if (editor && typeof transcript.text === "string") {
+	if (editor && typeof command == "string") {
 		const position = editor.selection.active;  // Current cursor position
-		const text: string = transcript.text
+		const text: string = command
 		editor.edit(editBuilder => {
 			editBuilder.insert(position, text);  // Insert text at cursor position
 		});
 	}
 
-	for (let utterance of transcript.utterances!) {
+	/*for (let utterance of transcript.utterances!) {
 		console.log(`Speaker ${utterance.speaker}: ${utterance.text}`)
-	}
+	}*/
 }
 
 // This method is called when your extension is deactivated

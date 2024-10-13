@@ -1,7 +1,16 @@
 import os
 import google.generativeai as genai
+from flask import Flask, request, jsonify
 
-def generate_code_from_command(command):
+app = Flask(__name__)
+
+@app.route('/generate_code_from_command', methods=['POST'])
+def generate_code_from_command():
+    # Get the command parameter from the JSON request
+    data = request.get_json()
+    command = data.get("command")
+    print(command)
+
     # Set the API key
     os.environ["API_KEY"] = "AIzaSyCki_UWdiVS-1Qo4wmehuJuDusyEMYjPbk"
     genai.configure(api_key=os.environ["API_KEY"])
@@ -14,10 +23,11 @@ def generate_code_from_command(command):
         "This is an audio transcript. This is supposed to be a person speaking what they want in code. "
         "Generate the code to copy and paste: " + command
     )
+    
+    # Return the generated code as a JSON response
+    result = {"message": response.text}
+    return jsonify(result)
 
-    return response.text
+if __name__ == '__main__':
+    app.run(port=5000)
 
-# Example usage
-command_text = "Create a full React app that prints 'Hello World' on the front page and includes all files."
-code_output = generate_code_from_command(command_text)
-print(code_output)
