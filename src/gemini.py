@@ -1,8 +1,9 @@
 import os
-import google.generativeai as genai
+import google.generativeai as genai  # type: ignore
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
+
 
 @app.route('/generate_code_from_command', methods=['POST'])
 def generate_code_from_command():
@@ -20,14 +21,15 @@ def generate_code_from_command():
 
     # Generate content based on the audio transcript and command
     response = model.generate_content(
-        "This is an audio transcript. This is supposed to be a person speaking what they want in code. "
+        "This is an audio transcript. This is supposed to be a person "
+        "speaking what they want in code. "
         "Generate the code to copy and paste: " + command
     )
-    
+
     # Return the generated code as a JSON response
     result = {"message": response.text}
     return jsonify(result)
 
+
 if __name__ == '__main__':
     app.run(port=5000)
-
