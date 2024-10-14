@@ -6,10 +6,12 @@ import axios from 'axios';
 
 import { AssemblyAI } from 'assemblyai';
 import { CodeRunner } from './coderunner';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 // AssemblyAI configuration
 const client = new AssemblyAI({
-  	apiKey: 'a8f8800503f64f2cb716dd36b090f909'
+  	apiKey: process.env.ASSEMBLY_API_KEY
 });
 
 // Address of our Intel AI PC

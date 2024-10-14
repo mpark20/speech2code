@@ -1,6 +1,10 @@
 import os
 import google.generativeai as genai  # type: ignore
 from flask import Flask, request, jsonify
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -13,8 +17,7 @@ def generate_file_name_from_command():
     print(command)
 
     # Set the API key
-    os.environ["API_KEY"] = "AIzaSyCki_UWdiVS-1Qo4wmehuJuDusyEMYjPbk"
-    genai.configure(api_key=os.environ["API_KEY"])
+    genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 
     # Initialize the generative model
     model = genai.GenerativeModel("gemini-1.5-flash")

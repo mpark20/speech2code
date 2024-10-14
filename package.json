@@ -312,10 +312,10 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/micromatch": "^3.1.0",
     "@types/express": "^5.0.0",
+    "@types/micromatch": "^3.1.0",
     "@types/mocha": "^10.0.8",
-    "@types/node": "20.x",
+    "@types/node": "^20.16.11",
     "@types/vscode": "^1.94.0",
     "@types/ws": "^8.5.12",
     "@typescript-eslint/eslint-plugin": "^8.7.0",
@@ -324,18 +324,19 @@
     "@vscode/test-electron": "^2.4.1",
     "esbuild": "^0.24.0",
     "eslint": "^9.11.1",
-    "typescript": "^5.6.2",
-    "tslint": "tslint -t verbose src/**/*.ts"
+    "tslint": "tslint -t verbose src/**/*.ts",
+    "typescript": "^5.6.2"
   },
   "dependencies": {
     "assemblyai": "^4.7.1",
     "axios": "^1.7.7",
+    "dotenv": "^16.4.5",
     "express": "^4.17.1",
+    "micromatch": "^4.0.2",
     "nodejs-whisper": "^0.1.18",
     "open": "^7.0.4",
+    "tree-kill": "^1.2.2",
     "whisper-node": "^1.1.1",
-    "ws": "^7.4.6",
-    "micromatch": "^4.0.2",
-    "tree-kill": "^1.2.2"
+    "ws": "^7.4.6"
   }
 }
